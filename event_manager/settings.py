@@ -30,7 +30,11 @@ ALLOWED_HOSTS = ['.onrender.com', '127.0.0.1']
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+from django.core.wsgi import get_wsgi_application
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'event_manager.settings')
+
+application = get_wsgi_application()
 # Application definition
 
 INSTALLED_APPS = [
