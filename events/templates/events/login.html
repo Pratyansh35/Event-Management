@@ -1,0 +1,80 @@
+{% extends "events/base.html" %}
+{% block content %}
+{% load static %}
+<style>
+  body {
+    background: url("{% static 'images/login-bg.jpg' %}") no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .login-overlay {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1rem;
+    padding: 3rem 2rem;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 1s ease-in-out;
+  }
+
+  .form-floating input {
+    border-radius: 0.5rem;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #4b6cb7, #182848);
+    border: none;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #3a539b, #121a3e);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .text-primary {
+    color: #4b6cb7 !important;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+  <div class="login-overlay w-100" style="max-width: 400px;">
+    <h2 class="text-center mb-4 text-primary fw-bold">Welcome Back 👋</h2>
+
+    {% if messages %}
+    <div class="alert alert-danger">
+      {% for message in messages %}
+      <div>{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="username" name="username" placeholder="Username" required />
+        <label for="username">Username</label>
+      </div>
+      <div class="form-floating mb-4">
+        <input type="password" class="form-control" name="password" id="password" placeholder="Password" required />
+        <label for="password">Password</label>
+      </div>
+      <button class="btn btn-primary w-100 py-2 mb-3" type="submit">Sign In</button>
+      <div class="text-center">
+        <small class="text-muted">© 2017-2025 Events Org</small>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
