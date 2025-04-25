@@ -1,44 +1,105 @@
-{% extends "events/base.html" %} 
+{% extends "events/base.html" %}
+{% load static %}
 {% block content %}
-<h1>Dashboard</h1>
-<a href="/add-event">Add New Event</a>
-<ul class="list-group mt-3">
-  {% for event in events_list %}
-  <li class="list-group-item d-flex justify-content-between align-items-center">
-    <div>
-      <h5>{{ event.name }}</h5>
-      <p>{{ event.date }}</p>
-    </div>
-    <div>
-      <!-- Details Button -->
-      <a href="{% url 'details' event.id %}" class="btn btn-info btn-sm"
-        >Details</a
-      >
 
-      <!-- Edit Button -->
-      <a href="{% url 'edit_event' event.id %}" class="btn btn-primary btn-sm"
-        >Edit</a
-      >
+<style>
+  .dashboard-header {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
 
-      <!-- Delete Button -->
-      <form
-        action="{% url 'delete_event' event.id %}?next={{ request.path }}"
-        method="POST"
-        style="display: inline"
-      >
-        {% csrf_token %}
-        <button
-          type="submit"
-          class="btn btn-danger btn-sm"
-          onclick="return confirm('Are you sure you want to delete this event?');"
-        >
-          Delete
-        </button>
-      </form>
+  .add-btn {
+    display: block;
+    max-width: 180px;
+    margin: 0 auto 2rem;
+    background: linear-gradient(135deg, #4b6cb7, #182848);
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+
+  .add-btn:hover {
+    background: linear-gradient(135deg, #3a539b, #121a3e);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .event-item {
+    border-radius: 1rem;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.06);
+    margin-bottom: 1rem;
+    padding: 1rem 1.5rem;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .event-item:hover {
+    transform: scale(1.01);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .event-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #34495e;
+  }
+
+  .event-date {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+  }
+
+  .event-actions .btn {
+    margin-left: 0.25rem;
+  }
+
+  .no-events {
+    text-align: center;
+    color: #aaa;
+    font-size: 1.1rem;
+    margin-top: 2rem;
+  }
+</style>
+
+<div class="container py-5">
+  <h1 class="dashboard-header">📊 My Event Dashboard</h1>
+
+  <a href="/add-event" class="add-btn text-decoration-none">
+    ➕ Add New Event
+  </a>
+
+  {% if events_list %}
+    <ul class="list-unstyled">
+      {% for event in events_list %}
+        <li class="event-item d-flex justify-content-between align-items-center">
+          <div>
+            <div class="event-name">{{ event.name }}</div>
+            <div class="event-date">{{ event.date }}</div>
+          </div>
+
+          <div class="event-actions">
+            <a href="{% url 'details' event.id %}" class="btn btn-outline-info btn-sm">Details</a>
+            <a href="{% url 'edit_event' event.id %}" class="btn btn-outline-primary btn-sm">Edit</a>
+            <form action="{% url 'delete_event' event.id %}?next={{ request.path }}" method="POST" style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this event?');">Delete</button>
+            </form>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="no-events">
+      You have not created any events yet.
     </div>
-  </li>
-  {% empty %}
-  <p class="text-muted">You have not created any events yet.</p>
-  {% endfor %}
-</ul>
+  {% endif %}
+</div>
+
 {% endblock %}

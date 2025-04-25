@@ -313,19 +313,52 @@ def ProfileView(request):
 
 
 # View for handling ticket purchase
+# @login_required(login_url="/login")
+# def BuyTicket(request, pk):
+#     event = get_object_or_404(Event, pk=pk)
+#     user = request.user
+
+#     if request.method == "POST":
+#         # Create a new ticket for the event
+#         ticket = Ticket.objects.create(
+#             event=event,
+#             user=user,
+#             price=0.00,
+#             purchase_date=timezone.now()
+#         )
+#         return render(request, "events/buy_ticket.html", {"event": event, "user": user, "ticket": ticket})
+
+#     return render(request, "events/buy_ticket.html", {"event": event, "user": user})
+
+from django.core.files.storage import FileSystemStorage
+
 @login_required(login_url="/login")
 def BuyTicket(request, pk):
     event = get_object_or_404(Event, pk=pk)
     user = request.user
+    ticket = None
+    screenshot_url = None
 
     if request.method == "POST":
-        # Create a new ticket for the event
+        uploaded_file = request.FILES.get("screenshot")
+
+        if uploaded_file:
+            fs = FileSystemStorage()
+            filename = fs.save(uploaded_file.name, uploaded_file)
+            screenshot_url = fs.url(filename)
+
+        # Create a ticket (you can store the screenshot path in the Ticket model if needed)
         ticket = Ticket.objects.create(
             event=event,
             user=user,
             price=0.00,
             purchase_date=timezone.now()
         )
-        return render(request, "events/buy_ticket.html", {"event": event, "user": user, "ticket": ticket})
+
+        return render(
+            request,
+            "events/buy_ticket.html",
+            {"event": event, "user": user, "ticket": ticket, "screenshot_url": screenshot_url}
+        )
 
     return render(request, "events/buy_ticket.html", {"event": event, "user": user})

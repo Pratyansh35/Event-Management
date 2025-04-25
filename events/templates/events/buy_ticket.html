@@ -1,39 +1,60 @@
 {% extends "events/base.html" %}
+{% load static %}
 {% block content %}
-<h1>Ticket</h1>
-<h3 class="my-3">{{event.name}}</h3>
-<div class="container">
- 
-    {% if ticket %} 
-    <div>
-        <dl>
-            <dt>name</dt>
-            <dd>{{event.venue.name}}</dd>
-            <dt>address</dt>
-            <dd>{% if event.venue.is_virtual%} Virtual {% else %} {{event.venue.address}} {%endif%}</dd>
-            <dt>address</dt>
-            <dd>{{event.venue.virtual_meeting_link}}</dd>
-        </dl>
+<div class="container py-5">
+  <h1 class="mb-4 text-primary fw-bold">🎟️ Ticket Details</h1>
+  <h3 class="my-3">{{ event.name }}</h3>
+
+  {% if ticket %}
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <dl class="row">
+        <dt class="col-sm-3">Venue</dt>
+        <dd class="col-sm-9">{{ event.venue.name }}</dd>
+
+        <dt class="col-sm-3">Address</dt>
+        <dd class="col-sm-9">
+          {% if event.venue.is_virtual %}
+            Virtual
+          {% else %}
+            {{ event.venue.address }}
+          {% endif %}
+        </dd>
+
+        {% if event.venue.virtual_meeting_link %}
+        <dt class="col-sm-3">Meeting Link</dt>
+        <dd class="col-sm-9">{{ event.venue.virtual_meeting_link }}</dd>
+        {% endif %}
+
+        {% if screenshot_url %}
+        <dt class="col-sm-3">Payment Screenshot</dt>
+        <dd class="col-sm-9">
+          <img src="{{ screenshot_url }}" class="img-fluid rounded shadow" alt="Payment Screenshot" style="max-width: 300px;" />
+        </dd>
+        {% endif %}
+      </dl>
+      <p class="text-success mt-3 fw-semibold">✅ Your spot is reserved. We'll contact you soon!</p>
     </div>
-    {% endif %}
-    {% if ticket == None %} 
-     <form
-action="{% url 'buy-ticket' event.id %}"
-method="POST"
-style="display: inline"
->
+  </div>
+
+  {% else %}
+  <div class="alert alert-info border rounded p-3 mb-4">
+    <p class="mb-2 fw-semibold">📲 Scan the QR below to pay, then upload the screenshot.</p>
+    <img src="{% static 'images/payment_qr.jpg' %}" alt="Payment QR" class="img-fluid mx-auto d-block border p-2 rounded shadow" style="max-width: 300px;">
+  </div>
+
+  <form method="POST" enctype="multipart/form-data" action="{% url 'buy-ticket' event.id %}">
     {% csrf_token %}
-<button
-    type="submit"
-    class="w-100 btn my-2 btn-lg btn-primary"
->
-    Get a Spot
-</button>
-</form>
-    {% endif %}
+    <div class="mb-3">
+      <label for="screenshot" class="form-label fw-medium">Upload payment screenshot</label>
+      <input class="form-control" type="file" id="screenshot" name="screenshot" accept="image/*" required>
+    </div>
+    <button type="submit" class="btn btn-lg btn-primary w-100">Get a Spot</button>
+  </form>
+  {% endif %}
 
   <footer class="my-5 pt-5 text-body-secondary text-center text-small">
-    <p class="mb-1">© 2017–2024 Company Name</p>
+    <p class="mb-1">© 2017-2025 Legendary Planners</p>
     <ul class="list-inline">
       <li class="list-inline-item"><a href="#">Privacy</a></li>
       <li class="list-inline-item"><a href="#">Terms</a></li>
